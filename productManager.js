@@ -20,7 +20,7 @@ class ProductManager {
 const result = this.products.find( prod => prod.code === product.code)
 
 if (result){
-     return 'Existe el producto con ese codigo'
+     return 'Ya existe un producto con ese codigo'
 }
 
 if (this.products.length === 0) {
