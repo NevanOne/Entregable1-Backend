@@ -77,42 +77,134 @@ class ProductManager {
     }
 }
 
-// Crear una instancia de ProductManager
-const products = new ProductManager();
+const fs = require('fs').promises;
 
-// Mostrar los productos (debe devolver un arreglo vacío [])
-console.log(products.getProducts());
+class ProductManager {
+    constructor(filePath) {
+        this.filePath = filePath;
+        this.products = [];
 
-// Agregar un producto
-console.log(products.addProduct({
-    title: 'producto prueba',
-    description: 'Este es un producto prueba',
-    price: 200,
-    thumbnail: 'Sin imagen',
-    code: 'abc123',
-    stock: 25
-}));
+        // Se carga la data del archivo cuando se crea una instancia
+        this.loadFromFile();
+    }
 
-// Mostrar los productos nuevamente (ahora debería aparecer el producto recién agregado)
-console.log(products.getProducts());
+    async loadFromFile() {
+        try {
+            const data = await fs.readFile(this.filePath, 'utf8');
+            this.products = JSON.parse(data);
+        } catch (error) {
+            // Si el archivo arroja un error o no existe, se inicializa el array vacio
+            this.products = [];
+        }
+    }
 
-// Obtener un producto por ID (reemplaza 'id_especificado' por el ID del producto)
-try {
-    console.log(products.getProductById(id_especificado)); // Cambia 'id_especificado' por un ID válido
-} catch (error) {
-    console.log(error.message);
+    async saveToFile() {
+        try {
+            await fs.writeFile(this.filePath, JSON.stringify(this.products, null, 2), 'utf8');
+        } catch (error) {
+            console.error("Error escribiendo el archivo:", error);
+        }
+    }
+
+    getProducts() {
+        return this.products;
+    }
+
+    addProduct(product) {
+        const existingProduct = this.products.find(prod => prod.code === product.code);
+        if (existingProduct) {
+            throw new Error('Ya existe un producto con ese código');
+        }
+
+        const productId = this.generateProductId();
+        product.id = productId;
+        this.products.push(product);
+        this.saveToFile();
+        return 'Producto agregado';
+    }
+
+    getProductById(pid) {
+        const product = this.products.find(prod => prod.id === pid);
+        if (!product) {
+            throw new Error('No existe el producto con el ID especificado');
+        }
+        return product;
+    }
+
+    updateProduct(pid, updatedFields) {
+        const productToUpdate = this.products.find(prod => prod.id === pid);
+        if (!productToUpdate) {
+            throw new Error('No existe el producto con el ID especificado');
+        }
+
+        Object.keys(updatedFields).forEach(key => {
+            if (key !== 'id') {
+                productToUpdate[key] = updatedFields[key];
+            }
+        });
+
+        this.saveToFile();
+        return 'Producto actualizado';
+    }
+
+    deleteProduct(pid) {
+        const index = this.products.findIndex(prod => prod.id === pid);
+        if (index === -1) {
+            throw new Error('No existe el producto con el ID especificado');
+        }
+
+        this.products.splice(index, 1);
+        this.saveToFile();
+        return 'Producto eliminado';
+    }
+
+    generateProductId() {
+        const ids = this.products.map(product => product.id);
+        let newId = 1;
+
+        while (ids.includes(newId)) {
+            newId++;
+        }
+
+        return newId;
+    }
 }
 
-// Actualizar un producto (reemplaza 'id_producto' por el ID del producto y 'updatedFields' por los campos actualizados)
-try {
-    console.log(products.updateProduct(id_producto, { title: 'Nuevo título' })); // Cambia 'id_producto' por un ID válido y 'updatedFields' según lo necesario
-} catch (error) {
-    console.log(error.message);
-}
+// Crear una instancia de ProductManager con persistencia de archivos
+const filePath = 'products.json';
+const products = new ProductManager(filePath);
 
-// Eliminar un producto (reemplazar 'id_producto' por el ID del producto a eliminar)
-try {
-    console.log(products.deleteProduct(id_producto)); // Cambiar 'id_producto' por un ID válido
-} catch (error) {
-    console.log(error.message);
-}
+(async () => {
+    try {
+        // Mostrar los productos (debe devolver un arreglo vacío [])
+        console.log(products.getProducts());
+
+        // Agregar un producto
+        await products.addProduct({
+            title: 'producto prueba',
+            description: 'Este es un producto prueba',
+            price: 200,
+            thumbnail: 'Sin imagen',
+            code: 'abc123',
+            stock: 25
+        });
+
+        // Mostrar los productos nuevamente (ahora debería aparecer el producto recién agregado)
+        console.log(products.getProducts());
+
+        // Obtener un producto por ID (reemplazar 'id_especificado' por el ID del producto)
+        const productId = 1; // Reemplazar con el ID válido del producto
+        console.log(products.getProductById(productId));
+
+        // Actualizar un producto (reemplazar 'id_producto' por el ID del producto y 'updatedFields' por los campos actualizados)
+        const updatedFields = { title: 'Nuevo título' }; // Reemplazar con los campos actualizados
+        const productIdToUpdate = 1; // Reemplazar con el ID válido del producto a actualizar
+        console.log(await products.updateProduct(productIdToUpdate, updatedFields));
+
+        // Eliminar un producto (reemplazar 'id_producto' por el ID del producto a eliminar)
+        const productIdToDelete = 1; // Reemplazar con el ID válido del producto a eliminar
+        console.log(await products.deleteProduct(productIdToDelete));
+    } catch (error) {
+        console.error(error.message);
+    }
+})();
