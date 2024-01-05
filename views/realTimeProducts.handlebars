@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos Real Time Handlebars</title>
+</head>
+<body>
+    <h1>RTP Handblebars</h1>
+
+    <!-- Lista de productos -->
+    <ul id="productsList">
+        {{#each products}}
+            <li>{{this.name}} - {{this.price}}</li>
+        {{/each}}
+    </ul>
+
+    <!-- Formulario para crear un nuevo producto -->
+    <form id="productForm">
+        <input type="text" name="name" placeholder="Nombre">
+        <input type="number" name="price" placeholder="Precio">
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Manejar la creación de un nuevo producto
+        document.getElementById('productForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const productData = {
+                name: formData.get('name'),
+                price: formData.get('price')
+            };
+            socket.emit('nuevoProducto', productData);
+        });
+
+        // Manejar la actualización de la lista de productos en tiempo real
+        socket.on('actualizarProductos', (products) => {
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = '';
+            products.forEach((product) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${product.name} - ${product.price}`;
+                productsList.appendChild(listItem);
+            });
+        });
+    </script>
+</body>
+</html>

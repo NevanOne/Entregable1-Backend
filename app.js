@@ -1,9 +1,20 @@
 const express = require('express');
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const exphbs = require('express-handlebars');
+const path = require('path');
 const ProductManager = require('./ProductManager');
 
 const filePath = 'products.json';
 const products = new ProductManager(filePath);
+
+// Configurar Handlebars como el motor de plantillas
+app.engine('handlebars', exphbs());
+app.set('view engine', 'handlebars');
+
+// Establecer la carpeta 'views' para las plantillas
+app.set('views', path.join(__dirname, 'views'));
 
 const verificarProductos = (req, res, next) => {
     if (products.getProducts().length >= 10) {
@@ -60,6 +71,9 @@ productsRouter.post('/', (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
+
+    // Emitir el nuevo producto a todos los clientes
+    io.emit('newProduct', product);
 });
 
 productsRouter.put('/:pid', (req, res) => {
@@ -81,6 +95,9 @@ productsRouter.delete('/:pid', (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
+
+    // Emitir a los clientes que un producto fue eliminado
+    io.emit('productDeleted', productId);
 });
 
 app.use('/api/products', productsRouter);
@@ -97,7 +114,21 @@ cartsRouter.post('/:cid/product/:pid', (req, res) => {
 
 app.use('/api/carts', cartsRouter);
 
+// Ruta para la vista que lista los productos en tiempo real
+app.get('/realtimeproducts', (req, res) => {
+    res.render('realTimeProducts', { /* datos para la vista si es necesario */ });
+});
+
+// Manejo de WebSockets
+io.on('connection', (socket) => {
+    console.log('Un cliente se ha conectado');
+
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+    });
+});
+
 const PORT = 8080;
-app.listen(PORT, () => {
+http.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
