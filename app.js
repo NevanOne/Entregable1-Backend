@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const SocketIO = require('socket.io');
 const path = require('path');
-const ProductManager = require('./ProductManager');
+const ProductManager = require('./ProductManager'); // productmanager never read
 const handlebars = require('express-handlebars');
 
 const app = express();
@@ -11,10 +11,10 @@ const io = SocketIO(httpServer);
 
 // Configuración de Handlebars como motor de plantillas
 app.engine('handlebars', handlebars({
-    extname: '.handlebars', // Extensión de los archivos de plantilla
-    defaultLayout: 'main', // Nombre del layout por defecto
+    extname: '.handlebars',
+    defaultLayout: 'main', 
     layoutsDir: path.join(__dirname, 'views/layouts'), // Directorio de layouts
-    partialsDir: path.join(__dirname, 'views/partials') // Directorio de partials
+    partialsDir: path.join(__dirname, 'views/partials') 
 }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
@@ -41,7 +41,6 @@ productsRouter.get('/:id', (req, res) => {
         res.status(404).json({ error: error.message });
     }
 });
-// Establecer la carpeta 'views' para las plantillas
 app.set('views', path.join(__dirname, 'views'));
 
 const verificarProductos = (req, res, next) => {
