@@ -2,16 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Listado de Productos</title>
 </head>
 <body>
-    <h1>Home</h1>
-
-    <!-- Lista de productos -->
+    <h1>Listado de Productos</h1>
     <ul>
         {{#each products}}
-            <li>{{this.name}} - {{this.price}}</li>
+            <li>{{this.title}} - {{this.description}} - {{this.price}}</li>
         {{/each}}
     </ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Manejo de la actualización de la lista de productos en tiempo real
+        socket.on('updateProducts', products => {
+            // Actualizar la lista de productos en la vista según los datos recibidos
+            console.log('Productos actualizados:', products);
+        });
+    </script>
 </body>
 </html>

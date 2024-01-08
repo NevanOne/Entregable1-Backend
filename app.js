@@ -1,18 +1,46 @@
 const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const exphbs = require('express-handlebars');
+const http = require('http');
+const SocketIO = require('socket.io');
 const path = require('path');
 const ProductManager = require('./ProductManager');
+const handlebars = require('express-handlebars');
 
-const filePath = 'products.json';
-const products = new ProductManager(filePath);
+const app = express();
+const httpServer = http.createServer(app);
+const io = SocketIO(httpServer);
 
-// Configurar Handlebars como el motor de plantillas
-app.engine('handlebars', exphbs());
+// Configuración de Handlebars como motor de plantillas
+app.engine('handlebars', handlebars({
+    extname: '.handlebars', // Extensión de los archivos de plantilla
+    defaultLayout: 'main', // Nombre del layout por defecto
+    layoutsDir: path.join(__dirname, 'views/layouts'), // Directorio de layouts
+    partialsDir: path.join(__dirname, 'views/partials') // Directorio de partials
+}));
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
 
+// Ruta para la vista home que lista todos los productos
+app.get('/home', (req, res) => {
+    const allProducts = products.getProducts();
+    res.render('home', { products: allProducts });
+});
+
+
+// Manejo de rutas para productos
+productsRouter.get('/', (req, res) => {
+    const allProducts = products.getProducts();
+    res.json(allProducts);
+});
+
+productsRouter.get('/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+    try {
+        const foundProduct = products.getProductById(productId);
+        res.json(foundProduct);
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+});
 // Establecer la carpeta 'views' para las plantillas
 app.set('views', path.join(__dirname, 'views'));
 
