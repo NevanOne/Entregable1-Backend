@@ -10,7 +10,7 @@ const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
 // Configuración de Handlebars como motor de plantillas
-app.engine('handlebars', handlebars({
+app.engine('handlebars', handlebars.engine({
     extname: '.handlebars',
     defaultLayout: 'main', 
     layoutsDir: path.join(__dirname, 'views/layouts'), // Directorio de layouts
@@ -18,6 +18,9 @@ app.engine('handlebars', handlebars({
 }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'handlebars');
+
+//inicialización productsrouter
+const productsRouter = express.Router();
 
 // Ruta para la vista home que lista todos los productos
 app.get('/home', (req, res) => {
@@ -51,7 +54,7 @@ const verificarProductos = (req, res, next) => {
     }
 };
 
-const productsRouter = express.Router();
+
 
 productsRouter.get('/', verificarProductos, (req, res) => {
     const limit = parseInt(req.query.limit);
@@ -156,6 +159,6 @@ io.on('connection', (socket) => {
 });
 
 const PORT = 8080;
-http.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
