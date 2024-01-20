@@ -9,6 +9,14 @@ const app = express();
 const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
+// Conexión a mongoose
+mongoose.connect('mongodb+srv://GabrielAlfonzo:<password>@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',(error)=>{
+    if(error){
+        console.log("No se puede conectar a la base de datos"+error)
+        process.exit()
+    }
+})
+
 // Configuración de Handlebars como motor de plantillas
 app.engine('handlebars', handlebars.engine({
     extname: '.handlebars',
