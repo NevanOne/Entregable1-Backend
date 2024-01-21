@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+</head>
+<body>
+  <h1>Chat</h1>
+  <div id="messages">
+    {{#each messages}}
+      <p>{{user}}: {{message}}</p>
+    {{/each}}
+  </div>
+  <form id="messageForm">
+    <input type="text" id="userInput" placeholder="Tu nombre" required>
+    <input type="text" id="messageInput" placeholder="Escribe tu mensaje" required>
+    <button type="button" onclick="sendMessage()">Enviar</button>
+  </form>
+
+  <script>
+    async function sendMessage() {
+      const user = document.getElementById('userInput').value;
+      const message = document.getElementById('messageInput').value;
+
+      if (user && message) {
+        try {
+          // Enviar mensaje directamente a la colección "messages" en MongoDB
+          await fetch('/api/sendMessage', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user, message }),
+          });
+
+          // Actualizar la lista de mensajes despues de enviar
+          location.reload();
+        } catch (error) {
+          console.error('Error al enviar el mensaje', error);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
