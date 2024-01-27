@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Message = require('../dao/models/messageModel');
+const Message = require('../../src/db/models/messageModel');
 
 // Ruta para enviar mensajes directamente desde el cliente
 router.post('/api/sendMessage', async (req, res) => {
