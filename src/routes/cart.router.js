@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Cart = require('../src/db/models/cartModel');
-const Product = require('../src/db/models/productModel'); 
+const Cart = require('../db/models/cartModel');
+const Product = require('../db/models/productModel'); 
 
 // Ruta para eliminar un producto específico del carrito
 router.delete('/:cid/products/:pid', async (req, res) => {

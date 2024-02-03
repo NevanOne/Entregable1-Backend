@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../../src/db/models/productModel'); 
+const Product = require('../db/models/productModel'); 
 
 // Ruta para obtener productos con paginación, búsqueda y ordenamiento
 router.get('/', async (req, res) => {
