@@ -1,0 +1,24 @@
+<h1>Lista de Productos</h1>
+<ul>
+  <% products.forEach(product => { %>
+    <li>
+      <a href="/views/products/<%= product._id %>">
+        <%= product.name %>
+      </a>
+      <form action="/add-to-cart" method="post">
+        <input type="hidden" name="productId" value="<%= product._id %>">
+        <button type="submit">Agregar al carrito</button>
+      </form>
+    </li>
+  <% }); %>
+</ul>
+<!-- Paginación -->
+<div>
+  <% if (hasPrevPage) { %>
+    <a href="<%= prevLink %>">Página anterior</a>
+  <% } %>
+  Página <%= page %> de <%= totalPages %>
+  <% if (hasNextPage) { %>
+    <a href="<%= nextLink %>">Página siguiente</a>
+  <% } %>
+</div>

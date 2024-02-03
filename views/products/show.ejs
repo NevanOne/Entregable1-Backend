@@ -1,0 +1,22 @@
+<!-- Detalles de un producto específico -->
+<h1><%= product.name %></h1>
+<p><%= product.description %></p>
+<p>Precio: <%= product.price %></p>
+<p>Categoría: <%= product.category %></p>
+
+<!-- Botón para agregar al carrito directamente -->
+<form action="/add-to-cart" method="post">
+  <input type="hidden" name="productId" value="<%= product._id %>">
+  <button type="submit">Agregar al carrito</button>
+</form>
+
+<!--Detalles de un carrito específico-->
+<h1>Carrito</h1>
+<ul>
+  <% cart.products.forEach(cartItem => { %>
+    <li>
+      Producto: <%= cartItem.product.name %>
+      Cantidad: <%= cartItem.quantity %>
+    </li>
+  <% }); %>
+</ul>
