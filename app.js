@@ -9,6 +9,9 @@ const app = express();
 const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
+import passport from 'passport';
+import { initializePassport } from './src/db/passport.config';
+
 // Conexión a mongoose
 mongoose.connect('mongodb+srv://GabrielAlfonzo:<password>@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',(error)=>{
     if(error){
@@ -166,7 +169,23 @@ io.on('connection', (socket) => {
     });
 });
 
+app.use(session({
+    store:MongoStore.create({
+        mongoUrl: 'mongodb+srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',
+        mongoOptions: {useNewUrl},
+        ttl: 30
+    }),  
+    secret: 'aaaaaaaaa',
+    resave: false,
+    saveUniinitialized: false,
+
+}))
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
 const PORT = 8080;
 httpServer.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+

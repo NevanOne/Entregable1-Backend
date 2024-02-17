@@ -2,6 +2,7 @@ const passport = require('passport');
 const local = require('passport-local');
 const { userModel } = require('./models/user.model');
 const { createHash, isValidPassword } = require('../utils/hashBcrypt');
+const jwt = require('jsonwebtoken');
 
 const LocalStrategy = local.Strategy;
 
@@ -57,6 +58,26 @@ const initializePassport = () => {
     }));
 };
 
+// Función para generar un token JWT
+function generateToken(user) {
+  return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+}
+
+// Middleware para verificar token JWT
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
 module.exports = {
-    initializePassport
+    initializePassport,
+    generateToken,
+    authenticateToken
 };
