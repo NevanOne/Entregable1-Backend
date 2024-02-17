@@ -3,6 +3,8 @@ const local = require('passport-local');
 const { userModel } = require('./models/user.model');
 const { createHash, isValidPassword } = require('../utils/hashBcrypt');
 const jwt = require('jsonwebtoken');
+const GitHubStrategy = require('passport-github').Strategy;
+
 
 const LocalStrategy = local.Strategy;
 
@@ -75,6 +77,45 @@ function authenticateToken(req, res, next) {
     next();
   });
 }
+
+// Autenticación en Github
+
+passport.use(new GitHubStrategy({
+    clientID: 831166,
+    clientSecret: Iv1.ce12ded8407fa909,
+    callbackURL: "http://localhost:3000/auth/github/callback"
+  },
+  async function(accessToken, refreshToken, profile, cb) {
+    try {
+      const user = await User.findOne({ githubId: profile.id });
+      if (user) {
+        return cb(null, user);
+      } else {
+        const newUser = {
+          githubId: profile.id,
+          username: profile.username,
+          email: profile.emails[0].value 
+        };
+
+        const createdUser = await User.create(newUser);
+        return cb(null, createdUser);
+      }
+    } catch (error) {
+      return cb(error);
+    }
+  }
+));
+
+app.get('/auth/github',
+  passport.authenticate('github'));
+
+app.get('/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Autenticación exitosa
+    res.redirect('/');
+  });
+  app.use(passport.initialize());
 
 module.exports = {
     initializePassport,
