@@ -80,4 +80,38 @@ router.get('/current', authenticateToken, async (req, res) => {
   }
 });
 
+// Login de usuario
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Verificar si el usuario existe en la base de datos
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Usuario no existente' });
+    }
+
+    // Verificar la contraseña
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
+
+    // Guardar el usuario en la sesión
+    req.session.user = {
+      id: user._id,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      age: user.age,
+    };
+
+    res.json({ message: 'Inicio de sesión exitoso' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+module.exports = router;
+
 module.exports = router;
