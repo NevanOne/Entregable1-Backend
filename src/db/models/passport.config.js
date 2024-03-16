@@ -1,7 +1,7 @@
 const passport = require('passport');
 const local = require('passport-local');
-const { userModel } = require('./models/user.model');
-const { createHash, isValidPassword } = require('../utils/hashBcrypt');
+const { userModel } = require('./user.model');
+const { createHash, isValidPassword } = require('../../utils/hashBcrypt');
 const jwt = require('jsonwebtoken');
 const GitHubStrategy = require('passport-github').Strategy;
 

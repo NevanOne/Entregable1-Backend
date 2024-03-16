@@ -10,7 +10,7 @@ const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
 import passport from 'passport';
-import { initializePassport } from './src/db/passport.config';
+import { initializePassport } from './src/db/models/passport.config';
 
 // Conexión a mongoose
 mongoose.connect('mongodb+srv://GabrielAlfonzo:<password>@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',(error)=>{
