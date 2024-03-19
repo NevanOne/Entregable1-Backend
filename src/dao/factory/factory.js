@@ -1,36 +1,42 @@
-const { configObject, connectBD } = require("../../db/models/connectDB");
+const {config: {persistence, dbConnection}} = require('../../db/models/connectDB.js')
 
-let UserDao
 let ProductDao
-let CartsDao
+let UserDao
+let CartDao
+let OrderDao
 
+switch ('MONGO') {
+    case 'MONGO':
 
-// Persistencia Mongo
-switch (configObject.persistence) {
-    case 'FILE':
-        const UserDaoFile = require("../fileManager/userManagerfile")
-        UserDao = UserDaoFile
+        dbConnection() // 2 llamada a la conexión
+        const ProductDaoMongo = require('./mongo/product.mongo.js')
+        ProductDao = ProductDaoMongo
 
+        const UserDaoMongo = require('./mongo/user.mongo.js')
+        UserDao = UserDaoMongo
 
-        break;
+        const OrderDaoMongo = require('./mongo/oders.mongo.js')
+        OrderDao = OrderDaoMongo
+
+        const CartDaoMongo = require('./mongo/cart.mongo.js')
+        CartDao = CartDaoMongo
+        
+        break
     case 'MEMORY':
+        const UserDaoMemory = require('./memory/user.memory.js')
+        UserDao = UserDaoMemory
+        break;
+    case 'ARCHIVO':
         
         break;
 
     default:
-//linea para import from
-        connectBD()
-
-        const UserDaoMongo = require("./Mongo/usersDao.mongo")
-        UserDao = UserDaoMongo
-
-        const ProductDaoMongo = require("./Mongo/productsDao.mongo")
-        ProductDao = ProductDaoMongo
-
         break;
 }
 
 module.exports = {
     UserDao,
-    ProductDao
+    ProductDao,
+    CartsDao,
+    OrderDao,
 }
