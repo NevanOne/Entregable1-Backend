@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../db/models/productModel'); 
+const Product = require('../db/models/productModel');
+import { customizeError } from '../utils/errors/errorCustomizer';
+
 
 // Ruta para obtener productos con paginación, búsqueda y ordenamiento
 router.get('/', async (req, res) => {
@@ -35,6 +37,7 @@ router.get('/', async (req, res) => {
   } catch (error) {
     res.status(500).json({ status: 'error', message: error.message });
   }
+  
 });
 
 // Ruta para vistas de productos
@@ -42,4 +45,26 @@ router.get('/views/products', (req, res) => {
   // Implementa lógica para renderizar la vista de productos
 });
 
+//  manejo de error en productos
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+      const errorMessage = customizeError('product_not_found');
+      res.status(404).json({ error: errorMessage });
+  } else {
+      // Lógica para buscar el producto por ID
+      const getProductById = (productId) => {
+        // Buscar el producto en la colección de productos
+        const product = products.find(product => product._id === productId);
+        return product;
+    }; 
+    const productId = 'product_123'; // ID del producto a buscar
+    const product = getProductById(productId);
+    if (product) {
+        console.log('Producto encontrado:', product);
+    } else {
+        console.log('Producto no encontrado');
+    }
+  }
+});
 module.exports = router;

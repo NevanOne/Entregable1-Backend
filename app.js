@@ -4,13 +4,13 @@ const SocketIO = require('socket.io');
 const path = require('path');
 const ProductManager = require('./ProductManager'); // productmanager never read
 const handlebars = require('express-handlebars');
-
 const app = express();
 const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
 import passport from 'passport';
 import { initializePassport } from './src/db/models/passport.config';
+import mockingRoutes from './src/routes/mockingRoutes'; //Import de Mocking
 
 // Conexión a mongoose
 mongoose.connect('mongodb+srv://GabrielAlfonzo:<password>@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',(error)=>{
@@ -169,6 +169,8 @@ io.on('connection', (socket) => {
     });
 });
 
+
+
 app.use(session({
     store:MongoStore.create({
         mongoUrl: 'mongodb+srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',
@@ -189,3 +191,7 @@ httpServer.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
 
+//Mocking Route
+router.use('/api', mockingRoutes);
+
+export default router;
