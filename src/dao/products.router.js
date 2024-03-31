@@ -42,10 +42,10 @@ router.get('/', async (req, res) => {
 
 // Ruta para vistas de productos
 router.get('/views/products', (req, res) => {
-  // Implementa lógica para renderizar la vista de productos
+  // Implementa la lógica para renderizar la vista de productos
 });
 
-//  manejo de error en productos
+//  manejo de error en productos usando el customizeError
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   if (!id) {
