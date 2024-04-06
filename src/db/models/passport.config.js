@@ -82,7 +82,7 @@ function authenticateToken(req, res, next) {
 
 passport.use(new GitHubStrategy({
     clientID: 831166,
-    clientSecret: Iv1.ce12ded8407fa909,
+    clientSecret: "Iv1.ce12ded8407fa909",
     callbackURL: "http://localhost:3000/api/sessions/githubcallback"
   },
   async function(accessToken, refreshToken, profile, cb) {
@@ -106,19 +106,19 @@ passport.use(new GitHubStrategy({
   }
 ));
 
-app.get('/auth/github',
-  passport.authenticate('github'));
+// app.get('/auth/github',
+//   passport.authenticate('github'));
 
-app.get('/auth/github/callback',
-  passport.authenticate('github', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Autenticación exitosa
-    res.redirect('/');
-  });
-  app.use(passport.initialize());
+// app.get('/auth/github/callback',
+//   passport.authenticate('github', { failureRedirect: '/login' }),
+//   function(req, res) {
+//     // Autenticación exitosa
+//     res.redirect('/');
+//   });
+//   app.use(passport.initialize());
 
 module.exports = {
-    initializePassport,
     generateToken,
-    authenticateToken
+    authenticateToken,
+    initializePassport,
 };

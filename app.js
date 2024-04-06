@@ -2,23 +2,27 @@ const express = require('express');
 const http = require('http');
 const SocketIO = require('socket.io');
 const path = require('path');
-const ProductManager = require('./ProductManager'); // productmanager never read
+// const ProductManager = require(''); // productmanager never read
 const handlebars = require('express-handlebars');
 const app = express();
 const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
+const passport = require("passport");
+const mongoose = require("mongoose")
+const session = require("express-session")
+const MongoStore = require("connect-mongo")
 
-import passport from 'passport';
-import { initializePassport } from './src/db/models/passport.config';
-import mockingRoutes from './src/routes/mockingRoutes'; //Import de Mocking
+const {initializePassport} = require("./src/db/models/passport.config.js")
+ // import { initializePassport } from './src/db/models/passport.config.js';
+ const router = require("./src/routes/mockingRoutes.js")
+// import router from './src/routes/mockingRoutes.js';
+const mockingRoutes = require("./src/routes/mockingRoutes.js")
+// import mockingRoutes from './src/routes/mockingRoutes.js'; //Import de Mocking
 
 // Conexión a mongoose
-mongoose.connect('mongodb+srv://GabrielAlfonzo:<password>@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',(error)=>{
-    if(error){
-        console.log("No se puede conectar a la base de datos"+error)
-        process.exit()
-    }
-})
+mongoose.connect('mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/')
+// +srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority')
+
 
 // Configuración de Handlebars como motor de plantillas
 app.engine('handlebars', handlebars.engine({
@@ -42,8 +46,9 @@ app.get('/home', (req, res) => {
 
 // Manejo de rutas para productos
 productsRouter.get('/', (req, res) => {
-    const allProducts = products.getProducts();
-    res.json(allProducts);
+    // const allProducts = products.getProducts();
+    // res.json(allProducts);
+    res.send("Hola")
 });
 
 productsRouter.get('/:id', (req, res) => {
@@ -64,7 +69,6 @@ const verificarProductos = (req, res, next) => {
         res.status(500).json({ error: 'No hay suficientes productos creados' });
     }
 };
-
 
 
 productsRouter.get('/', verificarProductos, (req, res) => {
@@ -170,11 +174,10 @@ io.on('connection', (socket) => {
 });
 
 
-
 app.use(session({
     store:MongoStore.create({
-        mongoUrl: 'mongodb+srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',
-        mongoOptions: {useNewUrl},
+        // mongoUrl: 'mongodb+srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',
+        mongoUrl: 'mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/',
         ttl: 30
     }),  
     secret: 'aaaaaaaaa',
@@ -194,4 +197,4 @@ httpServer.listen(PORT, () => {
 //Mocking Route
 router.use('/api', mockingRoutes);
 
-export default router;
+module.exports = router;

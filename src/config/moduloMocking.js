@@ -12,7 +12,10 @@ const generateProducts = () => {
 };
 
 // Handler de la ruta '/mockingproducts' para entregar productos de ejemplo
-export const mockingProductsHandler = (req, res) => {
+const mockingProductsHandler = (req, res) => {
     const products = generateProducts();
     res.json(products);
 };
+module.exports ={
+    mockingProductsHandler,
+}
