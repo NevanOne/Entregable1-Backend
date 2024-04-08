@@ -95,4 +95,22 @@ router.get('/views/carts/:cid', async (req, res) => {
   }
 });
 
+//CartsRouter
+const cartsRouter = express.Router();
+
+cartsRouter.get('/:cid', (req, res) => {
+    res.json({ message: `Obtener los productos del carrito con ID ${req.params.cid}` });
+});
+
+cartsRouter.post('/:cid/product/:pid', (req, res) => {
+    res.json({ message: `Agregar el producto con ID ${req.params.pid} al carrito con ID ${req.params.cid}` });
+});
+
+app.use('/api/carts', cartsRouter);
+
+// Ruta para la vista que lista los productos en tiempo real
+app.get('/realtimeproducts', (req, res) => {
+    res.render('realTimeProducts', { /* datos para la vista si es necesario */ });
+});
+
 module.exports = router;

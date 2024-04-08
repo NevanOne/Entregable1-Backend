@@ -67,4 +67,78 @@ router.get('/:id', (req, res) => {
     }
   }
 });
+
+productsRouter.get('/', verificarProductos, (req, res) => {
+  const limit = parseInt(req.query.limit);
+  const allProducts = products.getProducts();
+
+  if (limit) {
+      res.json(allProducts.slice(0, limit));
+  } else {
+      res.json(allProducts);
+  }
+});
+
+productsRouter.get('/:id', verificarProductos, (req, res) => {
+  const productId = parseInt(req.params.id);
+  try {
+      const foundProduct = products.getProductById(productId);
+      res.json(foundProduct);
+  } catch (error) {
+      res.status(404).json({ error: error.message });
+  }
+});
+
+productsRouter.post('/', (req, res) => {
+  const { title, description, code, price, stock, category, thumbnails } = req.body;
+
+  if (!title || !description || !code || !price || !stock || !category) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+
+  const product = {
+      title,
+      description,
+      code,
+      price: parseFloat(price),
+      status: true,
+      stock: parseInt(stock),
+      category,
+      thumbnails: thumbnails || []
+  };
+
+  try {
+      const result = products.addProduct(product);
+      res.json({ message: result });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+
+  // Emitir el nuevo producto a todos los clientes
+  io.emit('newProduct', product);
+});
+
+productsRouter.put('/:pid', (req, res) => {
+  const productId = parseInt(req.params.pid);
+  const updatedFields = req.body;
+  try {
+      const result = products.updateProduct(productId, updatedFields);
+      res.json({ message: result });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+});
+
+productsRouter.delete('/:pid', (req, res) => {
+  const productId = parseInt(req.params.pid);
+  try {
+      const result = products.deleteProduct(productId);
+      res.json({ message: result });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+
+  // Emitir a los clientes que un producto fue eliminado
+  io.emit('productDeleted', productId);
+});
 module.exports = router;
