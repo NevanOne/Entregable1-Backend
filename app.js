@@ -43,23 +43,6 @@ app.get('/home', (req, res) => {
     res.render('home', { products: allProducts });
 });
 
-
-// Manejo de rutas para productos
-productsRouter.get('/', (req, res) => {
-    // const allProducts = products.getProducts();
-    // res.json(allProducts);
-    res.send("Hola")
-});
-
-productsRouter.get('/:id', (req, res) => {
-    const productId = parseInt(req.params.id);
-    try {
-        const foundProduct = products.getProductById(productId);
-        res.json(foundProduct);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-});
 app.set('views', path.join(__dirname, 'views'));
 
 const verificarProductos = (req, res, next) => {

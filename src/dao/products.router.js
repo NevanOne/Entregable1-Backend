@@ -129,6 +129,23 @@ productsRouter.put('/:pid', (req, res) => {
   }
 });
 
+// Manejo de rutas para productos
+productsRouter.get('/', (req, res) => {
+  // const allProducts = products.getProducts();
+  // res.json(allProducts);
+  res.send("Hola")
+});
+
+productsRouter.get('/:id', (req, res) => {
+  const productId = parseInt(req.params.id);
+  try {
+      const foundProduct = products.getProductById(productId);
+      res.json(foundProduct);
+  } catch (error) {
+      res.status(404).json({ error: error.message });
+  }
+});
+
 productsRouter.delete('/:pid', (req, res) => {
   const productId = parseInt(req.params.pid);
   try {
@@ -141,4 +158,6 @@ productsRouter.delete('/:pid', (req, res) => {
   // Emitir a los clientes que un producto fue eliminado
   io.emit('productDeleted', productId);
 });
+
+
 module.exports = router;
