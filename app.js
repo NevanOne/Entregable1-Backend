@@ -2,7 +2,6 @@ const express = require('express');
 const http = require('http');
 const SocketIO = require('socket.io');
 const path = require('path');
-// const ProductManager = require(''); // productmanager never read
 const handlebars = require('express-handlebars');
 const app = express();
 const httpServer = http.createServer(app);
@@ -11,6 +10,11 @@ const passport = require("passport");
 const mongoose = require("mongoose")
 const session = require("express-session")
 const MongoStore = require("connect-mongo")
+const products = require('./src/dao/productManager.js');
+const ProductManager = require('./src/dao/productManager.js');
+const productManager = new ProductManager(); // Se define productManager aca
+
+
 
 const {initializePassport} = require("./src/db/models/passport.config.js")
  // import { initializePassport } from './src/db/models/passport.config.js';
@@ -27,8 +31,8 @@ mongoose.connect('mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongo
 // Configuración de Handlebars como motor de plantillas
 app.engine('handlebars', handlebars.engine({
     extname: '.handlebars',
-    defaultLayout: 'main', 
-    layoutsDir: path.join(__dirname, 'views/layouts'), // Directorio de layouts
+    defaultLayout: 'home', 
+    layoutsDir: path.join(__dirname, 'views/'), // Vistas
     partialsDir: path.join(__dirname, 'views/partials') 
 }));
 app.set('views', path.join(__dirname, 'views'));
@@ -38,11 +42,14 @@ app.set('view engine', 'handlebars');
 const productsRouter = express.Router();
 
 // Ruta para la vista home que lista todos los productos
-app.get('/home', (req, res) => {
-    const allProducts = products.getProducts();
-    res.render('home', { products: allProducts });
+app.get('/home', async (req, res) => {
+    try {
+        const allProducts = await productManager.getProducts();
+        res.render('home', { products: allProducts });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener productos: ' + error.message });
+    }
 });
-
 app.set('views', path.join(__dirname, 'views'));
 
 const verificarProductos = (req, res, next) => {
