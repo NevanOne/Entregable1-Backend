@@ -13,8 +13,7 @@ const MongoStore = require("connect-mongo")
 const products = require('./src/dao/productManager.js');
 const ProductManager = require('./src/dao/productManager.js');
 const productManager = new ProductManager(); // Se define productManager aca
-
-
+const dotenv = require('dotenv').config({path:'./env.production'})
 
 const {initializePassport} = require("./src/db/models/passport.config.js")
  // import { initializePassport } from './src/db/models/passport.config.js';
@@ -73,7 +72,7 @@ io.on('connection', (socket) => {
 
 app.use(session({
     store:MongoStore.create({
-        // mongoUrl: 'mongodb+srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',
+        // mongoUrl cluster viejo: 'mongodb+srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority',
         mongoUrl: 'mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/',
         ttl: 30
     }),  
@@ -85,6 +84,11 @@ app.use(session({
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
+app.post('/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
 
 const PORT = 8080;
 httpServer.listen(PORT, () => {

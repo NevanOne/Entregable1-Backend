@@ -1,5 +1,7 @@
-const mongoose = require("mongoose")
-const userCollection = 'usuarios'
+const mongoose = require("mongoose");
+const userCollection = 'usuarios';
+const bcrypt = require('bcrypt');
+
 
 const userSchema = new mongoose.Schema({
     first_name: String,
@@ -16,9 +18,31 @@ const userSchema = new mongoose.Schema({
     phone:{
         type: String,
         unique: true,
-    }  // Campo de numero de teléfono
+    },  // Campo de numero de teléfono
+    password: { type: String, required: true },
+
+    role: { type: String, enum: ['user', 'admin'], default: 'user' } // Añadir campo de rol
+
 
 })
+// Pre-save hook para hash la contraseña antes de guardar el usuario
+userSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        return next();
+    }
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Método para comparar la contraseña ingresada con la almacenada
+userSchema.methods.comparePassword = async function(candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const userModel = mongoose.model(userCollection, userSchema);
 

@@ -2,6 +2,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const { userModel } = require('./models/user.model');
 const { createHash, isValidPassword } = require('../utils/hashBcrypt');
+const dotenv = require('dotenv');
 
 // Función para generar un token JWT
 function generateToken(user) {
