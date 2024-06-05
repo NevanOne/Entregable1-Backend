@@ -15,6 +15,12 @@ const ProductManager = require('./src/dao/productManager.js');
 const productManager = new ProductManager(); // Se define productManager aca
 const dotenv = require('dotenv').config({path:'./env.production'})
 
+const paymentRoutes = require('./src/routes/paymentRoutes.js');
+
+// Configuración de middleware del payment
+app.use(express.json());
+app.use('/payment', paymentRoutes);
+
 const {initializePassport} = require("./src/db/models/passport.config.js")
  // import { initializePassport } from './src/db/models/passport.config.js';
  const router = require("./src/routes/mockingRoutes.js")
