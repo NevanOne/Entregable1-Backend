@@ -1,6 +1,6 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const { userModel } = require('./models/user.model');
+const { userModel } = require('../db/models/user.model');
 const { createHash, isValidPassword } = require('../utils/hashBcrypt');
 const dotenv = require('dotenv');
 

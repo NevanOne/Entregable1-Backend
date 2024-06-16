@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const dotenv = require ('dotenv')
-const {program} = require ("../utils/commander")
-const MongoSingleton = require("../utiles/mongoSingleton")
+const {program} = require ("../../utils/commander")
+const MongoSingleton = require("../../config/MongoSingleton")
 
 const { mode } = program.opts()
 console.log(mode)

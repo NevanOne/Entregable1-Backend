@@ -33,7 +33,7 @@ const CheckoutForm = () => {
         if (!error) {
             const { id } = paymentMethod;
 
-            // Llama a tu servidor para crear una sesión de pago
+            // Llamar al servidor para crear una sesión de pago
             const response = await fetch('/payment/create-checkout-session', {
                 method: 'POST',
                 headers: {
