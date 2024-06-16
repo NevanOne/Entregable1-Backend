@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer')
+const nodemailer = require('')
 const { configObject } = require('../db/models/connectDB')
 const transport = nodemailer.createTransport({
     service: 'gmail',
@@ -10,7 +10,7 @@ const transport = nodemailer.createTransport({
 })
 
 exports.sendMail = async (to, subject, html) => await transport.sendMail({
-    from: 'Coder test <projectodigitalgen@gmail.com>',
+    from: '',
     to,
     subject ,
     html,
