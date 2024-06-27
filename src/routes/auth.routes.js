@@ -1,6 +1,7 @@
 const express = require('express');
 const { registerUser, loginUser, logoutUser } = require('../middleware/authentication');
 const { checkRole } = require('../middleware/authorization');
+const passport = require('passport');
 
 const router = express.Router();
 
@@ -18,4 +19,13 @@ router.get('/admin', checkRole(['admin']), (req, res) => {
     res.status(200).json({ message: 'Welcome Admin' });
 });
 
+router.get('/github', passport.authenticate('github'));
+
+router.get('/github/callback',
+    passport.authenticate('github', { failureRedirect: '/login' }),
+    (req, res) => {
+        // Successful authentication, redirect home.
+        res.redirect('/');
+    }
+);
 module.exports = router;

@@ -86,10 +86,15 @@ app.get('/profile', (req, res) => {
     res.render('profile');
 });
 
+app.get('/realtimeproducts', (req, res) => {
+    res.render('realTimeProducts');
+});
+
 app.get('/index', (req, res) => {
     res.render('index');
 });
 
+app.use('/api/sessions', authRoutes);  // Asegúrate de que esta línea esté presente
 
 
 // Ruta de ejemplo para verificar si las rutas de autenticación funcionan

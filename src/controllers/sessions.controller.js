@@ -2,7 +2,7 @@ const { userModel } = require("../db/models/user.model")
 const { logger } = require("../middleware/logger")
 const { userService, cartService } = require("../services")
 const { createHash, isValidPassword } = require("../utils/hashBcrypt")
-const { generateToken } = require("../utils/jwt")
+const { generateToken } = require("../utils/jsonwebtoken")
 
 class AuthController {
     
