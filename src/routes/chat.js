@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Message = require('../dao/models/messageModel');
+const Message = require('../db/models/messageModel');
 
 // Ruta para la vista de chat
 router.get('/chat', async (req, res) => {

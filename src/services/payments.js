@@ -1,0 +1,14 @@
+const stripe = require('stripe')
+
+class PaymentService{
+    constructor(){
+        this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+    }
+    createPaymentIntent = async (data) => {
+        return await this.stripe.paymentIntent.create(data)
+    }
+}
+
+module.exports = {
+    PaymentService
+}

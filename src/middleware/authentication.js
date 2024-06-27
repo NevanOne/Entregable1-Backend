@@ -4,6 +4,8 @@ const { userModel } = require('../db/models/user.model');
 const { createHash, isValidPassword } = require('../utils/hashBcrypt');
 const dotenv = require('dotenv');
 
+dotenv.config(); // Cargar variables de entorno
+
 // Función para generar un token JWT
 function generateToken(user) {
   return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
@@ -30,7 +32,7 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// Función de registro de usuario
+// Función de registro de usuario  
 async function registerUser(req, res) {
   const { first_name, last_name, email, password } = req.body;
   try {

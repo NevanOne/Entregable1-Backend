@@ -1,5 +1,5 @@
 // Middleware de autorización para verificar el rol del usuario
-const { userModel } = require('../models/user.model');
+const { userModel } = require('../db/models/user.model');
 
 // Middleware para verificar roles
 

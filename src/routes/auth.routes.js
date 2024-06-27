@@ -1,12 +1,19 @@
-// Protección de rutas
-
 const express = require('express');
-const { createUser } = require('../controllers/users.controller');
+const { registerUser, loginUser, logoutUser } = require('../middleware/authentication');
 const { checkRole } = require('../middleware/authorization');
 
 const router = express.Router();
 
-router.post('/register', createUser);
+// Ruta para registro de usuario
+router.post('/register', registerUser);
+
+// Ruta para inicio de sesión de usuario
+router.post('/login', loginUser);
+
+// Ruta para cierre de sesión de usuario
+router.post('/logout', logoutUser);
+
+// Ruta protegida para administradores
 router.get('/admin', checkRole(['admin']), (req, res) => {
     res.status(200).json({ message: 'Welcome Admin' });
 });
