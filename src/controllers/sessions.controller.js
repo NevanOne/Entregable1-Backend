@@ -6,7 +6,6 @@ const { generateToken } = require("../utils/jsonwebtoken")
 
 class AuthController {
     
-
     registerUser = async (req, res)=>{ // Base de Datos
         try {
             const { first_name, last_name, email, password } = req.body

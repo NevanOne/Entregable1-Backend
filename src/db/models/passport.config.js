@@ -82,29 +82,20 @@ function authenticateToken(req, res, next) {
 
 passport.use(new GitHubStrategy({
     clientID: 831166,
-    clientSecret: "Iv1.ce12ded8407fa909",
+    clientSecret: "81bc9bc2f1a9de41bbfaef8cee820d47bb3a103b",
     callbackURL: "http://localhost:8080/api/sessions/githubcallback"
   },
-  async function(accessToken, refreshToken, profile, cb) {
+  async (accessToken, refreshToken, profile, done) => {
     try {
-      const user = await User.findOne({ githubId: profile.id });
-      if (user) {
-        return cb(null, user);
-      } else {
-        const newUser = {
-          githubId: profile.id,
-          username: profile.username,
-          email: profile.emails[0].value 
-        };
-
-        const createdUser = await User.create(newUser);
-        return cb(null, createdUser);
+      let user = await userModel.findOne({ githubId: profile.id });
+      if (!user) {
+        user = await userModel.create({ githubId: profile.id, email: profile.emails[0].value });
       }
+      return done(null, user);
     } catch (error) {
-      return cb(error);
+      return done(error);
     }
-  }
-));
+  }));
 
 // app.get('/auth/github',
 //   passport.authenticate('github'));

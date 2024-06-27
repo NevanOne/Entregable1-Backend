@@ -1,4 +1,4 @@
-// App.js
+// StripeCheckout.jsx
 import React from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -13,7 +13,7 @@ const App = () => {
     );
 };
 
-// CheckoutForm.js
+// CheckoutForm.jsx
 import React from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 

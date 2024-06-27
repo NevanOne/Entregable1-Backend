@@ -48,12 +48,13 @@ async function registerUser(req, res) {
     let result = await userModel.create(newUser);
     return res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
+    console.error('Error al registrar el usuario:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 }
 
 // Función de inicio de sesión de usuario
-async function loginUser(req, res) {
+async function loginUser(req, res, next) {
   passport.authenticate('login', async (err, user) => {
     try {
       if (err || !user) {
@@ -65,9 +66,10 @@ async function loginUser(req, res) {
         return res.json({ token });
       });
     } catch (error) {
+      console.error('Error en el inicio de sesión:', error);
       return res.status(500).json({ message: 'Internal server error' });
     }
-  })(req, res);
+  })(req, res, next);
 }
 
 // Función de cierre de sesión de usuario

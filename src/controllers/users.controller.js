@@ -1,5 +1,5 @@
 const { userService } = require('../services')
-const CustomError = require('../utils/errors/CustomeError')
+const CustomError = require('../utils/errors/CustomError')
 const EErrors = require('../utils/errors/enums')
 const { generateUserErrorInfo } = require('../utils/errors/info')
 
@@ -40,7 +40,7 @@ class UserController {
                     cause: generateUserErrorInfo({
                         first_name: nombre, 
                         last_name: apellido, 
-                        email
+                        email: email,
                     }),
                     message: 'Error Trying to create user',
                     code: EErrors.INVALID_TYPES_ERROR

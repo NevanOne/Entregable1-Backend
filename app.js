@@ -20,6 +20,14 @@ const paymentRoutes = require('./src/routes/paymentRoutes.js');
 const authRoutes = require('./src/routes/auth.routes.js');
 const mockingRoutes = require("./src/routes/mockingRoutes.js");
 
+const stripeRoutes = require('./src/stripe/stripeRoutes.js');
+
+const cors = require('cors');
+app.use(cors());
+
+app.use('/api/stripe', stripeRoutes);
+
+
 // Conexión a MongoDB
 mongoose.connect('mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/');
 

@@ -15,10 +15,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['male', 'female', 'other'] // Enumeracion para género
     },
-    phone:{
-        type: String,
-        unique: true,
-    },  // Campo de numero de teléfono
     password: { type: String, required: true },
 
     role: { type: String, enum: ['user', 'admin'], default: 'user' } // Añadir campo de rol

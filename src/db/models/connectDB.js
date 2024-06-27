@@ -10,7 +10,7 @@ dotenv.config({
 })
 exports.connectDB = async () => {
     try {
-        await mongoose.connect('mongodb+srv://GabrielAlfonzo:lqNrawLlPkiVUh0o@coderhouse-cluster.h3mubya.mongodb.net/?retryWrites=true&w=majority')
+        await mongoose.connect('mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/')
         console.log('Base de datos conectada')        
     } catch (error) {
         console.log(error)

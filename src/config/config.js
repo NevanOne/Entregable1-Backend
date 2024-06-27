@@ -11,7 +11,7 @@ const enviroment = mode || "development"
 dotenv.config({
     path: enviroment === 'development' ? './.env.development' : './.env.production'
 })
-const url = process.env.MONGO_URL || 'mongodb://localhost:3000/'
+const url = process.env.MONGO_URL || '127.0.0.1:8080/'
 
 exports.config = {
     PORT:            process.env.PORT                || 3000,
