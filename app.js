@@ -94,8 +94,7 @@ app.get('/index', (req, res) => {
     res.render('index');
 });
 
-app.use('/api/sessions', authRoutes);  // Asegúrate de que esta línea esté presente
-
+app.use('/api/sessions', authRoutes);
 
 // Ruta de ejemplo para verificar si las rutas de autenticación funcionan
 app.get('/auth', (req, res) => {
