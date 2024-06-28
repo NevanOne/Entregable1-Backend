@@ -20,12 +20,13 @@ const paymentRoutes = require('./src/routes/paymentRoutes.js');
 const authRoutes = require('./src/routes/auth.routes.js');
 const mockingRoutes = require("./src/routes/mockingRoutes.js");
 
-const stripeRoutes = require('./src/stripe/stripeRoutes.js');
+// const stripeRoutes = require('./src/stripe/stripeRoutes.js');
 
 const cors = require('cors');
 app.use(cors());
 
-app.use('/api/stripe', stripeRoutes);
+// app.use('/api/stripe', stripeRoutes);
+
 
 
 // Conexión a MongoDB
@@ -66,6 +67,10 @@ app.use(passport.session());
 app.use('/payment', paymentRoutes);
 app.use('/auth', authRoutes);
 app.use('/api', mockingRoutes);
+app.use('/api/sessions', authRoutes);
+
+app.use('/create-checkout-session', paymentRoutes);
+
 
 
 // Ruta para la vista home que lista todos los productos

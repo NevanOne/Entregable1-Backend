@@ -83,7 +83,7 @@ function authenticateToken(req, res, next) {
 passport.use(new GitHubStrategy({
     clientID: 831166,
     clientSecret: "81bc9bc2f1a9de41bbfaef8cee820d47bb3a103b",
-    callbackURL: "http://localhost:8080/api/sessions/githubcallback"
+    callbackURL: "http://localhost:8080/api/sessions/github/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
