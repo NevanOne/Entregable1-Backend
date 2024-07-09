@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../db/models/user.model')
 
 // Middleware para verificar la autenticación del usuario
 const authenticateUser = (req, res, next) => {
@@ -36,4 +36,6 @@ router.get('/profile', authenticateUser, async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
 module.exports = router;

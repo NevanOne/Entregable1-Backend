@@ -3,6 +3,7 @@ const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { userModel } = require('../db/models/user.model.js');
+const { isValidPassword } = require('../utils/hashBcrypt.js');
 
 const router = express.Router();
 
@@ -92,8 +93,8 @@ router.post('/login', async (req, res) => {
     }
 
     // Verificar la contraseña
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
@@ -112,6 +113,18 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+router.get('/github', passport.authenticate('github', {scope:['user:email']}), async(req,res)=>{})
+router.get('/githubcallback', passport.authenticate('github', {failureRedirect:'/api/sessions/login'}), async(req,res)=>{
+  req.session.user = req.user
+  res.redirect('/profile')
+})
+
+app.get('/profile', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.render('profile', { user: req.user });
+  } else {
+    res.redirect('/login');
+  }
+});
 
 module.exports = router;

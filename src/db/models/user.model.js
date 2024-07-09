@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const userCollection = 'usuarios';
 const bcrypt = require('bcrypt');
 
-
 const userSchema = new mongoose.Schema({
     first_name: String,
     last_name: String,
@@ -15,7 +14,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['male', 'female', 'other'] // Enumeracion para género
     },
-    password: { type: String, required: true },
+    password: { type: String, required: false },
 
     role: { type: String, enum: ['user', 'admin'], default: 'user' } // Añadir campo de rol
 

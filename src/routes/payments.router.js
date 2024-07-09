@@ -1,7 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const stripe = require('stripe')
+const {Router} = require('express')
 const { PaymentService } = require('../services/payments')
+const router = Router()
 
 const products = [
     { id: 1, name: "papas", price: 1000 },
@@ -12,7 +11,9 @@ const products = [
 ]
 
 router.post('/payment-intents', async(req,res) => {
-    const productRequested = products.find(product=> product.id === parseInt(req.query.id))
+    res.send('intento de pago')
+    const { id } = req.query
+    const productRequested = products.find(product=> product.id === parseInt(id))
     if (!productRequested) return res.status(404).send({status: "error", error: "Producto no encontrado"});
     const paymentIntentInfo = {
         amount: productRequested.price,

@@ -1,12 +1,6 @@
 const passport = require('passport');
-const local = require('passport-local');
+const LocalStrategy = require('passport-local').Strategy;
 const { userModel } = require('./user.model');
-const { createHash, isValidPassword } = require('../../utils/hashBcrypt');
-const jwt = require('jsonwebtoken');
-const GitHubStrategy = require('passport-github').Strategy;
-
-
-const LocalStrategy = local.Strategy;
 
 const initializePassport = () => {
     passport.use('register', new LocalStrategy({
@@ -22,10 +16,30 @@ const initializePassport = () => {
                 first_name,
                 last_name,
                 email,
-                password: createHash(password)
+                password: password
             };
             let result = await userModel.create(newUser);
             return done(null, result);
+        } catch (error) {
+            return done(error);
+        }
+    }));
+
+    passport.use('login', new LocalStrategy({
+        usernameField: 'email'
+    }, async (email, password, done) => {
+        try {
+            const user = await userModel.findOne({ email });
+            if (!user) {
+                console.log('Usuario no encontrado');
+                return done(null, false);
+            }
+            const isMatch = await user.comparePassword(password);
+            if (!isMatch) {
+                console.log('Contraseña inválida');
+                return done(null, false);
+            }
+            return done(null, user);
         } catch (error) {
             return done(error);
         }
@@ -39,77 +53,36 @@ const initializePassport = () => {
         let user = await userModel.findOne({ _id: id });
         done(null, user);
     });
-
-    passport.use('login', new LocalStrategy({
-        usernameField: 'email'
-    }, async (email, password, done) => {
-        try {
-            const user = await userModel.findOne({ email });
-            if (!user) {
-                console.log('Usuario no encontrado');
-                return done(null, false);
-            }
-            if (!isValidPassword(password, user.password)) {
-                console.log('Contraseña inválida');
-                return done(null, false);
-            }
-            return done(null, user);
-        } catch (error) {
-            return done(error);
-        }
-    }));
 };
 
-// Función para generar un token JWT
-function generateToken(user) {
-  return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-}
-
-// Middleware para verificar token JWT
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-}
-
 // Autenticación en Github
+const GitHubStrategy = require('passport-github2').Strategy;
 
-passport.use(new GitHubStrategy({
-    clientID: 831166,
+passport.use('github', new GitHubStrategy({
+    clientID: "Iv1.ce12ded8407fa909",
     clientSecret: "81bc9bc2f1a9de41bbfaef8cee820d47bb3a103b",
-    callbackURL: "http://localhost:8080/api/sessions/github/callback"
+    callbackURL: "http://localhost:8080/api/sessions/githubcallback"
   },
   async (accessToken, refreshToken, profile, done) => {
+    console.log('profile', profile)
     try {
-      let user = await userModel.findOne({ githubId: profile.id });
-      if (!user) {
-        user = await userModel.create({ githubId: profile.id, email: profile.emails[0].value });
+      let user = await userModel.findOne({email: profile._json.email})
+      if(!user){
+        let newUser = {
+          first_name: profile.username,
+          last_name: profile.username,
+          email: profile._json.email,
+          password: ''
+        }
+        let result = await userModel.create(newUser)
+        return done(null, result)
       }
-      return done(null, user);
+      return done(null, user)
     } catch (error) {
-      return done(error);
+      done(error)
     }
-  }));
-
-// app.get('/auth/github',
-//   passport.authenticate('github'));
-
-// app.get('/auth/github/callback',
-//   passport.authenticate('github', { failureRedirect: '/login' }),
-//   function(req, res) {
-//     // Autenticación exitosa
-//     res.redirect('/');
-//   });
-//   app.use(passport.initialize());
-
+  }))
+  
 module.exports = {
-    generateToken,
-    authenticateToken,
     initializePassport,
 };

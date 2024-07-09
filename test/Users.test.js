@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const User = require('../src/dao/usersDao.mongo'); // Asegúrate de que el nombre de la clase sea correcto
+const User = require('../src/dao/usersDao.mongo'); 
 const assert = require('assert');
 
 // Manejar la conexión a MongoDB antes y después de las pruebas

@@ -2,35 +2,25 @@ const express = require('express');
 const http = require('http');
 const SocketIO = require('socket.io');
 const path = require('path');
-const handlebars = require('express-handlebars')
+const handlebars = require('express-handlebars');
 const passport = require("passport");
-const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
-require('dotenv').config
+require('dotenv').config();
 
+const MongoSingleton = require('./src/config/MongoSingleton.js');
+const authRoutes = require('./src/routes/auth.routes.js');
+const mockingRoutes = require("./src/routes/mockingRoutes.js");
+const paymentRouter = require('./src/routes/payments.router.js')
 const app = express();
 const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
-const ProductManager = require('./src/dao/productManager.js');
-const productManager = new ProductManager();
-
-const paymentRoutes = require('./src/routes/paymentRoutes.js');
-const authRoutes = require('./src/routes/auth.routes.js');
-const mockingRoutes = require("./src/routes/mockingRoutes.js");
-
-// const stripeRoutes = require('./src/stripe/stripeRoutes.js');
-
 const cors = require('cors');
 app.use(cors());
 
-// app.use('/api/stripe', stripeRoutes);
-
-
-
-// Conexión a MongoDB
-mongoose.connect('mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/');
+// Conexión a MongoDB utilizando MongoSingleton
+MongoSingleton.getInstance();
 
 // Configuración de Handlebars como motor de plantillas
 app.engine('handlebars', handlebars.engine({
@@ -49,12 +39,16 @@ app.use(express.urlencoded({ extended: true }));
 // Configuración de sesión
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/',
+        mongoUrl: process.env.MONGO_URL,
         ttl: 30
     }),
-    secret: 'aaaaaaaaa',
+    secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: false,
+    cookie: {
+        secure: false, // Cambiar a true en producción si se usa HTTPS
+        maxAge: 1000 * 60 * 60 * 2 // 2 horas de vida de la cookie
+    }
 }));
 
 // Inicialización de Passport
@@ -63,17 +57,23 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Usar rutas
-app.use('/payment', paymentRoutes);
-app.use('/auth', authRoutes);
-app.use('/api', mockingRoutes);
+// Rutas
+app.use('/api/payments', paymentRouter);
+app.use('/auth', authRoutes); // Rutas de autenticación
 app.use('/api/sessions', authRoutes);
+app.use('/api', mockingRoutes);
 
-app.use('/create-checkout-session', paymentRoutes);
+// Ruta de logout
+app.get('/logout', (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        res.redirect('/login');
+    });
+});
 
-
-
-// Ruta para la vista home que lista todos los productos
+// Ruta de vistas
 app.get('/home', async (req, res) => {
     try {
         const allProducts = await productManager.getProducts();
@@ -83,45 +83,27 @@ app.get('/home', async (req, res) => {
     }
 });
 
-app.get('/chat', (req, res) => {
-    res.render('chat');
+// Ruta de perfil
+app.get('/profile', requireAuth, (req, res) => {
+    // Acceder a los datos del usuario desde la sesión
+    const user = req.session.user;
+    res.render('profile', { user });
 });
 
-app.get('/login', (req, res) => {
-    res.render('login');
-});
+// Otras rutas de vistas
+const viewRoutes = [
+    { path: '/chat', view: 'chat' },
+    { path: '/login', view: 'login' },
+    { path: '/register', view: 'register' },
+    { path: '/profile', view: 'profile' },
+    { path: '/realtimeproducts', view: 'realTimeProducts' },
+    { path: '/index', view: 'index' }
+];
 
-app.get('/register', (req, res) => {
-    res.render('register');
-});
-
-app.get('/profile', (req, res) => {
-    res.render('profile');
-});
-
-app.get('/realtimeproducts', (req, res) => {
-    res.render('realTimeProducts');
-});
-
-app.get('/index', (req, res) => {
-    res.render('index');
-});
-
-app.use('/api/sessions', authRoutes);
-
-// Ruta de ejemplo para verificar si las rutas de autenticación funcionan
-app.get('/auth', (req, res) => {
-    res.status(200).json({ message: 'Ruta de autenticación funcionando' });
-});
-
-// Ruta de ejemplo para verificar si las rutas de pago funcionan
-app.get('/payment', (req, res) => {
-    res.status(200).json({ message: 'Ruta de pago funcionando' });
-});
-
-// Ruta de ejemplo para verificar si las rutas de mocking funcionan
-app.get('/api', (req, res) => {
-    res.status(200).json({ message: 'Ruta de mocking funcionando' });
+viewRoutes.forEach(route => {
+    app.get(route.path, (req, res) => {
+        res.render(route.view);
+    });
 });
 
 // Manejo de WebSockets
@@ -133,8 +115,26 @@ io.on('connection', (socket) => {
     });
 });
 
-const PORT = 8080;
+// Ruta de autenticación GitHub
+app.get('/auth/github',
+    passport.authenticate('github'));
+
+app.get('/api/sessions/githubcallback',
+    passport.authenticate('github', { failureRedirect: '/' }),
+    (req, res) => {
+        // Autenticación exitosa
+        req.session.user = req.user; // Guardar el usuario en la sesión
+        res.redirect('/profile');
+    });
+
+function requireAuth(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login'); // Redirigir al login si no está autenticado
+}
+
+const PORT = process.env.PORT || 8080;
 httpServer.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
-

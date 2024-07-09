@@ -1,5 +1,4 @@
-import passport from "passport";
-
+const passport = require('passport')
 // Middleware para extraer el token de la solicitud y adjuntarlo a req.user
 export const extractTokenStrategy = () => {
     return async (req, res, next) => {

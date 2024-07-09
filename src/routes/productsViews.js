@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Product = require('../models/Product');
+const Product = require('../db/models/productModel');
 
 // Ruta para visualizar todos los productos con paginación
 router.get('/', async (req, res) => {

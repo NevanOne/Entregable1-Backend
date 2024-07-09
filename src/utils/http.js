@@ -1,9 +1,11 @@
-export const getHeaders = () =>{
+const getHeaders = () => {
     return {
-        headers:{
-            'Content-Type':'application/json',
-            Accept:'application/json'
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
         },
-        withCredentials:true
-    }
-}
+        withCredentials: true
+    };
+};
+
+module.exports = { getHeaders };

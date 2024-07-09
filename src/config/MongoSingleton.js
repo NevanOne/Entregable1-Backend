@@ -7,7 +7,7 @@ class MongoSingleton {
 
     constructor(){
         set('strictQuery', false)
-        connect('mongodb://localhost:3000/',{
+        connect('mongodb+srv://Gabriel1998:Gabriel1998@coderhouse.lpjfxh1.mongodb.net/',{
             useNewUrlParser: true,
             useUnifiedTopology: true
         })
